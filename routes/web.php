@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +17,15 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get("/vue", function(){
+    return view("accueille");
+});
+
+// Route::get("/route", function (Request $request)
+// {
+//     return 
+//     [
+//         "url" => $request->url()
+//     ];
+// });
+// Route::get("/")
