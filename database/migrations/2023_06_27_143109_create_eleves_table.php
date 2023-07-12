@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string("lieu_naissance")->nullable();
             $table->integer("profil");
             $table->string("sexe");
+            $table->integer("etat")->default(1);
+            $table->integer("numero")->nullable();
             $table->timestamps();
         });
     }

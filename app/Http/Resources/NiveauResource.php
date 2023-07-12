@@ -20,7 +20,7 @@ class NiveauResource extends JsonResource
         return [
             "id" => $this->id,
             "libelle_niveau" => $this->libelle_niveau,
-            "classe" => ClasseResource::collection($this->Classes)
+            // "classe" => NiveauResource::collection($this->Classes)
         ];
         
     }

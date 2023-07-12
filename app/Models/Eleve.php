@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 
 class Eleve extends Model
 {
+    use Notifiable;
     protected $hidden = [
         'password',
         'remember_token',
@@ -74,6 +77,26 @@ class Eleve extends Model
     public function verifieIfOnly($numero)
     {
         return DB::table('eleves')->where('etat', 1)->where('numero', $numero)->get();
+    }
+
+    public function getNumeroDoAly()
+    {
+        $numero = DB::table("eleves")->where("etat", 1)->where("profil", 1)->orderByRaw("numero");
+        return $numero;
+    }
+
+    protected $fillable = [
+        'etat'
+    ];
+
+
+    public function scopeSortie(Builder $builder, array $idEleves , $sens)
+    {
+        return $builder->whereIn('id', $idEleves)->update(['etqt' => $sens]);
+    }
+    public function scope(Builder $buider, $profil, $etat)
+    {
+        return Eleve::whereRaw("etat = ? AND profil = ?", [$etat, $profil])->get();
     }
     use HasFactory;
 }

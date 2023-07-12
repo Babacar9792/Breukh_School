@@ -8,15 +8,21 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Inscription extends Model
 {
+    protected $hidden = [
+        "created_at",
+        "updated_at",
+        
+    ];
     use HasFactory;
     public function Eleves() : BelongsTo
     {
         return $this->belongsTo(Eleve::class);
     }
 
+
     public function Classes() : BelongsTo
     {
-        return $this->belongsTo(Classe::class);
+        return $this->belongsTo(Classe::class,'classe_id');
     }
     
 }

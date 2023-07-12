@@ -20,7 +20,7 @@ class NiveauController extends Controller
     public function index()
     {
         // $this->test();
-        $params = request()->query("join");
+        $params = ucfirst(strtolower(request()->query("join")));
         if($params == null || !in_array($params, $this->jointurePossible()))
         {
 
@@ -30,14 +30,17 @@ class NiveauController extends Controller
         {
             // $reponse = Niveau::with($params)->get();
             $niveau  = new Niveau();
+            
             // $reponse = Niveau::all();
-            $reponse = $niveau->load($params)->get();
-            return NiveauResource::collection($reponse);
+            $reponse = $niveau->with($params)->get();
+            // return NiveauResource::collection($reponse);
+            return $reponse;
         }
         //pour afficher tous les niveaux
 
 
     }
+
     public function getClasseById(Niveau $id)
     {
         // $niveau = Niveau::find($id);
@@ -47,7 +50,7 @@ class NiveauController extends Controller
 
     public function jointurePossible()
     {
-        return ["classes"];
+        return ["Classes"];
     }
     /**
      * Show the form for creating a new resource.

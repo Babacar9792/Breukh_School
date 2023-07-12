@@ -16,9 +16,9 @@ return new class extends Migration
     {
         Schema::create('inscriptions', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Classe::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(Eleve::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(AnnneScolaire::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Classe::class)->constrained();
+            $table->foreignIdFor(Eleve::class)->constrained();
+            $table->foreignIdFor(AnnneScolaire::class)->constrained();
             $table->dateTime("date_inscription");
             $table->timestamps();
         });

@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('eleves', function (Blueprint $table) {
-            $table->integer("etat")->default(1);
-            $table->integer("numero")->nullable();
-            //
+        Schema::create('evaluations', function (Blueprint $table) {
+            $table->id();
+            $table->string("libelle_evaluation");
+            $table->timestamps();
         });
     }
 
@@ -23,8 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('eleves', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('evaluations');
     }
 };
