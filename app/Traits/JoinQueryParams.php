@@ -6,10 +6,19 @@ namespace App\Traits;
 trait JoinQueryParams
 {
 
-
-
-    public function test()
+    function joinTable($model, $joinRelation)
     {
-        dd("hsjfhk");
+        $table = explode(",", $joinRelation);
+        foreach ($table as  $value) {
+            # code...
+            if (method_exists($model, $value)) {
+
+                echo $model::with($value)->get();
+            }
+            else 
+            {
+                echo $model::all();
+            }
+        }
     }
 }

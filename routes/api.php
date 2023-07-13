@@ -49,7 +49,7 @@ Route::get("/classes/{id}/coef", [DisciplineController::class, "getDisciplineByC
 
 Route::post("/classes/{id}/coef", [DisciplineController::class, "store"]);
 
-
+Route::apiResource("/classe", ClasseController::class)->only(["index"]);
 // Route::get("/aly", [eleveController::class, "getNumeroDoAly"]);
 
 Route::apiResource("/disciplines", DisciplineController::class)->only(["store", "index"]);

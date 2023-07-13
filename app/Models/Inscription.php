@@ -14,15 +14,17 @@ class Inscription extends Model
         
     ];
     use HasFactory;
-    public function Eleves() : BelongsTo
+    public function eleves() : BelongsTo
     {
         return $this->belongsTo(Eleve::class);
     }
 
 
-    public function Classes() : BelongsTo
+    public function classes() : BelongsTo
     {
         return $this->belongsTo(Classe::class,'classe_id');
     }
+
+
     
 }

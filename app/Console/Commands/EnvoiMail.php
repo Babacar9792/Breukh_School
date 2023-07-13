@@ -31,6 +31,8 @@ class EnvoiMail extends Command
      */
     public function handle()
     {
+
+        
         $evenement = Evenement::find(1);
         $eleve = Eleve::find(1);
         //

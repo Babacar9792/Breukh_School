@@ -17,25 +17,27 @@ class NiveauController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $params = $request->query("join");
+        $this->joinTable((new Niveau), $params);
         // $this->test();
-        $params = ucfirst(strtolower(request()->query("join")));
-        if($params == null || !in_array($params, $this->jointurePossible()))
-        {
+        // $params = ucfirst(strtolower(request()->query("join")));
+        // if($params == null || !in_array($params, $this->jointurePossible()))
+        // {
 
-          return Niveau::all();
-        }
-        else 
-        {
-            // $reponse = Niveau::with($params)->get();
-            $niveau  = new Niveau();
+        //   return Niveau::all();
+        // }
+        // else 
+        // {
+        //     // $reponse = Niveau::with($params)->get();
+        //     $niveau  = new Niveau();
             
-            // $reponse = Niveau::all();
-            $reponse = $niveau->with($params)->get();
-            // return NiveauResource::collection($reponse);
-            return $reponse;
-        }
+        //     // $reponse = Niveau::all();
+        //     $reponse = $niveau->with($params)->get();
+        //     // return NiveauResource::collection($reponse);
+        //     return $reponse;
+        // }
         //pour afficher tous les niveaux
 
 

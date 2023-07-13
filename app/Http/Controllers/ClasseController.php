@@ -12,6 +12,8 @@ use App\Models\Eleve;
 use App\Models\Evaluation;
 use App\Models\Inscription;
 use App\Models\Note;
+use App\Traits\JoinQueryParams;
+use Illuminate\Http\Request as HttpRequest;
 use Symfony\Component\HttpFoundation\Request;
 
 class ClasseController extends Controller
@@ -19,9 +21,17 @@ class ClasseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+
+     use JoinQueryParams;
+    public function index(HttpRequest $request)
     {
         //
+        $params = $request->query("join");
+        if($params == null)
+        {
+            Classe::all();
+        }
+        $this->joinTable((new Classe()), $params);
     }
 
     /**
@@ -123,100 +133,80 @@ class ClasseController extends Controller
     //         }
     //         return $tab;
     //     }
-    //     // return $; 
+    // return $; 
 
-    // }
+    //}
 
 
     public function getNoteBydiscipline(Classe $classe, Discipline $discipline)
     {
-        //Classe $classe, Discipline $discipline
-
-        // $collection = collect([1, 2, 3, 4, 5]);
-
-
+        // return $discipline;
         $inscriptions = $classe->load('Inscriptions')->inscriptions;
-        //  echo json_encode($inscriptions);
-        echo "***************";
+        // return $inscriptions;
         $ponderations = DisciplineClasse::where(["classe_id" => $classe->id, "discipline_id" => $discipline->id, "semestre_id" => 1])->pluck("id");
-      return $inscriptions->map(function ($item, $key) use ($ponderations) {
-
-            // $keys = [];
-            return ["eleve" => $item, "notes" => Note::whereIn("inscription_id", $ponderations)->get()];
-           // return $keys;
+      
+        $eleves = $inscriptions->map(function ($item, $key) use ($ponderations) {
+            $notesEleves = Note::where("inscription_id", $item->id)->join("discipline_classes", "discipline_classe_id", "=", "discipline_classes.id")->join("evaluations", "evaluation_id", "=", "evaluations.id")
+             ->whereIn("discipline_classe_id", $ponderations)->get(["libelle_evaluation", "note_eleve"]);
+        return ["eleve" => Eleve::select("prenom", "nom")->where("id",$item->eleve_id)->first(), "notes" =>  $notesEleves];
         });
-        // return $multiplied;
-        // return $multiplied->all(); // [2, 4, 6, 8, 10]
-
-        // $eleves = [];
-        // foreach ($inscriptions as $value) {
-        //     $note = [];
-        //     for ($i=0; $i <count($ponderations) ; $i++) { 
-        //         array_push($note, Note::where(["discipline_classe_id" => $ponderations[$i], "inscription_id" => $value->id])->first());
-        //         # code...
-        //     }
-        //     $eleve = ["eleve" => $value, "notes" => $note];
-        //     array_push($eleves, $eleve);
-        //     // return $note;    
-        //     # code...
-        // }
-        // return $eleves;
-        // return $ponderations;
+        $tab = ["donne" => ["classe" => $classe->libelle_classe, "discipline" => $discipline->libelle_discipline], "eleves" => $eleves];
+        return $tab;
     }
 
-    // public function getNoteByClasse(Classe $classe)
-    // {
-    //     $inscriptions = $classe->load("Inscriptions")->inscriptions;
+    public function getNoteByClasse(Classe $classe)
+    {
+        $inscriptions = $classe->load("Inscriptions")->inscriptions;
 
-    //     $disciplineClasse =  DisciplineClasse::where([
-    //         "classe_id" => $classe->id
-    //     ])->get();
-    //     if (count($disciplineClasse) == 0) {
-    //         return [__("messages.no disciplines for this classe")];
-    //     } else {
-    //         $table = [];
-    //         $tab = [];
-    //         array_push($table, ["classe" => $classe->libelle_classe]);
-    //         for ($i = 0; $i < count($inscriptions); $i++) {
+        $disciplineClasse =  DisciplineClasse::where([
+            "classe_id" => $classe->id
+        ])->get();
+        if (count($disciplineClasse) == 0) {
+            return [__("messages.no disciplines for this classe")];
+        } else {
+            $table = [];
+            $tab = [];
+            array_push($table, ["classe" => $classe->libelle_classe]);
+            for ($i = 0; $i < count($inscriptions); $i++) {
 
-    //             $eleve = Eleve::where([
-    //                 "id" => $inscriptions[$i]->eleve_id
-    //             ])->first();
-
-
-    //             for ($j = 0; $j < count($disciplineClasse); $j++) {
-
-    //                 # code..
-
-    //                 $noteEleve = Note::where([
-    //                     "inscription_id" => $inscriptions[$i]->id,
-    //                     "discipline_classe_id" => $disciplineClasse[$j]->id
-    //                 ])->get();
-    //                 $newnote = null;
-    //                 if (count($noteEleve) != 0) {
-    //                     // array_push($tab, $noteEleve);
-    //                     $newnote = $noteEleve[0]->note_eleve;
-    //                 }
-    //                 $objet = [
-    //                     "eleve" => $eleve,
-    //                     "type de note" => Evaluation::where([
-    //                         "id" => $disciplineClasse[$j]->evaluation_id,
-    //                     ])->first()->libelle_evaluation,
-    //                     "note" => $newnote,
-    //                     "discipline" => Discipline::where([
-    //                         "id" => $disciplineClasse[$j]->discipline_id
-    //                     ])->first()->libelle_discipline
+                $eleve = Eleve::where([
+                    "id" => $inscriptions[$i]->eleve_id
+                ])->first();
 
 
-    //                 ];
-    //                 array_push($tab, $objet);
-    //             }
-    //         }
-    //         array_push($table, ["data" => $tab]);
-    //         return $table;
-    //         return $disciplineClasse;
-    //     }
-    // }
+                for ($j = 0; $j < count($disciplineClasse); $j++) {
+
+                    # code..
+
+                    $noteEleve = Note::where([
+                        "inscription_id" => $inscriptions[$i]->id,
+                        "discipline_classe_id" => $disciplineClasse[$j]->id
+                    ])->get();
+                    $newnote = null;
+                    if (count($noteEleve) != 0) {
+                        // array_push($tab, $noteEleve);
+                        $newnote = $noteEleve[0]->note_eleve;
+                    }
+                    $objet = [
+                        "eleve" => $eleve,
+                        "type de note" => Evaluation::where([
+                            "id" => $disciplineClasse[$j]->evaluation_id,
+                        ])->first()->libelle_evaluation,
+                        "note" => $newnote,
+                        "discipline" => Discipline::where([
+                            "id" => $disciplineClasse[$j]->discipline_id
+                        ])->first()->libelle_discipline
+
+
+                    ];
+                    array_push($tab, $objet);
+                }
+            }
+            array_push($table, ["data" => $tab]);
+            return $table;
+            return $disciplineClasse;
+        }
+    }
 
 
     public function getNoteStudent(Request $request, Classe $classe)
@@ -237,7 +227,7 @@ class ClasseController extends Controller
             ])->get();
             if (count($note) != 0) {
                 $objet = [
-                    "eleve" => Eleve::find($idClasseInInscription->eleve_id),
+                    
                     "discipline" => Discipline::where([
                         "id" => DisciplineClasse::where([
                             "id" => $disciplineInClasse[$i]->id
@@ -252,12 +242,12 @@ class ClasseController extends Controller
                     ])->first()->libelle_evaluation,
                     "note" => $note[0]->note_eleve
                 ];
-
                 array_push($tab, $objet);
             }
             # code...
         }
-        return $tab;
+        $infoEleve = ["eleve" => Eleve::find($idClasseInInscription->eleve_id), "notes" => $tab];
+        return $infoEleve;
         return $classe->id;
     }
 }

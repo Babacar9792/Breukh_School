@@ -28,7 +28,7 @@ class Classe extends Model
     {
         return $this->hasMany(DisciplineClasse::class);
     }
-    public function Inscriptions() : HasMany
+    public function inscriptions() : HasMany
     {
         return $this->hasMany(Inscription::class);
     }
@@ -42,5 +42,10 @@ class Classe extends Model
     {
         DB::table("classes");
     }
+
+    public function eleves() : BelongsToMany
+    {
+        return $this->belongsToMany(Eleve::class, "inscriptions", "classe_id", "eleve_id");
+    } 
 
 }
