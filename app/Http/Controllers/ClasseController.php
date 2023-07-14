@@ -148,9 +148,9 @@ class ClasseController extends Controller
         $eleves = $inscriptions->map(function ($item, $key) use ($ponderations) {
             $notesEleves = Note::where("inscription_id", $item->id)->join("discipline_classes", "discipline_classe_id", "=", "discipline_classes.id")->join("evaluations", "evaluation_id", "=", "evaluations.id")
              ->whereIn("discipline_classe_id", $ponderations)->get(["libelle_evaluation", "note_eleve"]);
-        return ["eleve" => Eleve::select("prenom", "nom")->where("id",$item->eleve_id)->first(), "notes" =>  $notesEleves];
+        return ["eleve"=>Eleve::select("prenom", "nom")->where("id",$item->eleve_id)->first(), "notes" =>  $notesEleves];
         });
-        $tab = ["donne" => ["classe" => $classe->libelle_classe, "discipline" => $discipline->libelle_discipline], "eleves" => $eleves];
+        $tab = ["classe" => $classe->libelle_classe, "discipline" => $discipline->libelle_discipline, "eleves" => $eleves];
         return $tab;
     }
 
